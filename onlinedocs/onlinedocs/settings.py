@@ -2,20 +2,22 @@ from pathlib import Path
 import os
 import logging
 
+# -------------------
+# BASE DIR & SECURITY
+# -------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret-key")
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-# SECURITY
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "unsafe-dev-secret-key")
-DEBUG = os.environ.get("DJANGO_DEBUG", "True") == "True"
-
-# ALLOWED HOSTS
 ALLOWED_HOSTS = [
-    "127.0.0.1",
+    "onlinedocs.onrender.com",  # your Render domain
     "localhost",
-    "onlinedocs.onrender.com",  # production backend
+    "127.0.0.1",
 ]
 
+# -------------------
 # APPLICATIONS
+# -------------------
 INSTALLED_APPS = [
     'channels',
     'corsheaders',
@@ -31,7 +33,9 @@ INSTALLED_APPS = [
     'documents',
 ]
 
+# -------------------
 # MIDDLEWARE
+# -------------------
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -43,6 +47,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# -------------------
+# URL & TEMPLATES
+# -------------------
 ROOT_URLCONF = 'onlinedocs.urls'
 
 TEMPLATES = [
@@ -63,7 +70,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'onlinedocs.wsgi.application'
 ASGI_APPLICATION = 'onlinedocs.asgi.application'
 
+# -------------------
 # DATABASE
+# -------------------
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -71,6 +80,9 @@ DATABASES = {
     }
 }
 
+# -------------------
+# PASSWORD VALIDATION
+# -------------------
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -78,16 +90,25 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+# -------------------
+# INTERNATIONALIZATION
+# -------------------
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
+# -------------------
+# STATIC FILES
+# -------------------
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# -------------------
+# REST FRAMEWORK + JWT
+# -------------------
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -97,33 +118,32 @@ REST_FRAMEWORK = {
     ),
 }
 
-# CORS
+# -------------------
+# CORS & CSRF
+# -------------------
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:3000",
-    "http://localhost:3000",
     "https://onlinedocs.vercel.app",
+    "http://localhost:3000",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
-# CSRF
 CSRF_TRUSTED_ORIGINS = [
     "https://onlinedocs.vercel.app",
 ]
 
-# CHANNELS REDIS
-REDIS_HOST = os.environ.get("REDIS_HOST", "127.0.0.1")
-REDIS_PORT = os.environ.get("REDIS_PORT", 6379)
-
-logging.warning(f"🔌 CHANNELS connecting to Redis at {REDIS_HOST}:{REDIS_PORT}")
+# -------------------
+# CHANNELS & CELERY
+# -------------------
+REDIS_URL = os.environ.get("REDIS_URL", "redis://127.0.0.1:6379")
+logging.warning(f"🔌 CHANNELS connecting to Redis at {REDIS_URL}")
 
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [(REDIS_HOST, int(REDIS_PORT))],
+            "hosts": [REDIS_URL],
         },
     },
 }
 
-# CELERY
-CELERY_BROKER_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}"
+CELERY_BROKER_URL = REDIS_URL
