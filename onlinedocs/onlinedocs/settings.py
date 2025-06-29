@@ -134,8 +134,8 @@ CSRF_TRUSTED_ORIGINS = [
 # -------------------
 # CHANNELS & CELERY
 # -------------------
+
 REDIS_URL = os.environ.get("REDIS_URL", "redis://127.0.0.1:6379")
-logging.warning(f"🔌 CHANNELS connecting to Redis at {REDIS_URL}")
 
 CHANNEL_LAYERS = {
     "default": {
@@ -147,3 +147,4 @@ CHANNEL_LAYERS = {
 }
 
 CELERY_BROKER_URL = REDIS_URL
+
