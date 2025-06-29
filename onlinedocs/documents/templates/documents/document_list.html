@@ -1,0 +1,9 @@
+<h1>Your Documents</h1>
+<ul>
+  {% for doc in documents %}
+    <li><a href="{% url 'document-detail' doc.pk %}">{{ doc.title }}</a></li>
+  {% endfor %}
+</ul>
+<a href="{% url 'document-create' %}">Create New Document</a>
+
+

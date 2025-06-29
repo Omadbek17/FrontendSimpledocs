@@ -1,0 +1,24 @@
+<h1>{{ document.title }}</h1>
+<p>{{ document.content }}</p>
+<a href="{% url 'document-update' document.pk %}">Edit</a>
+
+<textarea id="editor" rows="10" cols="80">{{ document.content }}</textarea>
+
+<script>
+  const docId = "{{ document.id }}";
+  const socket = new WebSocket('ws://' + window.location.host + '/ws/documents/' + docId + '/');
+
+  const editor = document.getElementById('editor');
+
+  socket.onmessage = function(e) {
+      const data = JSON.parse(e.data);
+      editor.value = data.content;
+  };
+
+  editor.addEventListener('input', () => {
+      socket.send(JSON.stringify({
+          'content': editor.value
+      }));
+  });
+</script>
+
