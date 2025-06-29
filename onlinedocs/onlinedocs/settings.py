@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 import logging
+import dj_database_url
 
 # -------------------
 # BASE DIR & SECURITY
@@ -10,7 +11,7 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret-key")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
-    "onlinedocs.onrender.com",  # your Render domain
+    "onlinedocs.onrender.com",
     "localhost",
     "127.0.0.1",
 ]
@@ -74,10 +75,7 @@ ASGI_APPLICATION = 'onlinedocs.asgi.application'
 # DATABASE
 # -------------------
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
 }
 
 # -------------------
@@ -103,6 +101,7 @@ USE_TZ = True
 # -------------------
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -134,7 +133,6 @@ CSRF_TRUSTED_ORIGINS = [
 # -------------------
 # CHANNELS & CELERY
 # -------------------
-
 REDIS_URL = os.environ.get("REDIS_URL", "redis://127.0.0.1:6379")
 
 CHANNEL_LAYERS = {
@@ -147,4 +145,3 @@ CHANNEL_LAYERS = {
 }
 
 CELERY_BROKER_URL = REDIS_URL
-

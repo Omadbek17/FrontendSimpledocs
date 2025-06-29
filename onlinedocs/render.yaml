@@ -1,7 +1,8 @@
 services:
   - type: web
-    name: simpledocs
+    name: simpledocs-backend
     env: python
+    plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: daphne -b 0.0.0.0 -p 10000 onlinedocs.asgi:application
     envVars:
@@ -9,3 +10,23 @@ services:
         value: onlinedocs.settings
       - key: PYTHON_VERSION
         value: 3.11.6
+      - key: PYTHONPATH
+        value: .
+      - fromDatabase:
+          name: simpledocs-db
+          property: connectionString
+          key: DATABASE_URL
+      - fromService:
+          name: simpledocs-redis
+          property: connectionString
+          key: REDIS_URL
+
+databases:
+  - name: simpledocs-db
+    plan: free
+    postgresMajorVersion: 15
+
+services:
+  - type: redis
+    name: simpledocs-redis
+    plan: free
