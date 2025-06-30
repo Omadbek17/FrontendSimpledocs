@@ -11,10 +11,12 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret-key")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
-    "onlinedocs.onrender.com",
+    "simpledocsnew.onrender.com",
+    "onlinedocs.onrender.com",  # keep your old one if still needed
     "localhost",
     "127.0.0.1",
 ]
+
 
 # -------------------
 # APPLICATIONS
