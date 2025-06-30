@@ -4,31 +4,9 @@ services:
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: daphne -b 0.0.0.0 -p 10000 onlinedocs.asgi:application
-    envVars:
-      - key: DJANGO_SETTINGS_MODULE
-        value: onlinedocs.settings
-      - key: DATABASE_URL
-        value: postgres://simpledocs_db_user:0ixzg8xXXy68TzSgW8G0MChCMPGvLFNT@dpg-d1dg82jipnbc73c3alh0-a:5432/simpledocs_db
-      - key: REDIS_URL
-        value: redis://default:ATgUAAIjcDE5MDNlMjYwYzg3ZDY0YmJmYmE2ZDdiYzMzMGRiY2YxZnAxMA@electric-shiner-14356.upstash.io:6379
-      - key: DJANGO_SECRET_KEY
-        value: dev-secret-key
-      - key: PYTHON_VERSION
-        value: 3.11
 
   - type: worker
     name: simpledocs-celery
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: celery -A onlinedocs worker --loglevel=info
-    envVars:
-      - key: DJANGO_SETTINGS_MODULE
-        value: onlinedocs.settings
-      - key: DATABASE_URL
-        value: postgres://simpledocs_db_user:0ixzg8xXXy68TzSgW8G0MChCMPGvLFNT@dpg-d1dg82jipnbc73c3alh0-a:5432/simpledocs_db
-      - key: REDIS_URL
-        value: redis://default:ATgUAAIjcDE5MDNlMjYwYzg3ZDY0YmJmYmE2ZDdiYzMzMGRiY2YxZnAxMA@electric-shiner-14356.upstash.io:6379
-      - key: DJANGO_SECRET_KEY
-        value: dev-secret-key
-      - key: PYTHON_VERSION
-        value: 3.11
