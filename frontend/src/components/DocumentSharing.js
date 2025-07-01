@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { fetchWithAuth } from "../utils/auth";
-
+import api from "../utils/api";
 
 function DocumentSharing({ docId, onShared }) {
   const [shareWith, setShareWith] = useState("");
@@ -15,29 +14,27 @@ function DocumentSharing({ docId, onShared }) {
     setMessage("");
     setError("");
 
+    const token = localStorage.getItem("access");
+
     try {
-      const response = await fetchWithAuth(`http://localhost:8000/api/documents/${docId}/share/`, {
-        method: "POST",
-        body: JSON.stringify({ username: shareWith }),
-      });
-      
+      const data = await api.post(
+        `/documents/${docId}/share/`,
+        { username: shareWith },
+        token
+      );
 
-      const data = await response.json();
+      setMessage(data.message || "Document shared successfully!");
+      setShareWith("");
 
-      if (!response.ok) {
-        setError(data.error || "Failed to share document.");
-      } else {
-        setMessage(data.message || "Document shared successfully!");
-        setShareWith("");
-
-        // Only call onShared if it's a function
-        if (typeof onShared === "function") {
-          onShared();
-        }
+      if (typeof onShared === "function") {
+        onShared();
       }
     } catch (err) {
-      console.error(err);
-      setError("Network error while sharing document.");
+      console.error("Share error:", err);
+      setError(
+        err.message ||
+          "Network error while sharing document."
+      );
     } finally {
       setLoading(false);
     }
@@ -45,7 +42,9 @@ function DocumentSharing({ docId, onShared }) {
 
   return (
     <div className="mt-4">
-      <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Share Document</h3>
+      <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+        Share Document
+      </h3>
       <div className="flex items-center gap-2">
         <input
           type="text"
@@ -66,8 +65,16 @@ function DocumentSharing({ docId, onShared }) {
           {loading ? "Sharing..." : "Share"}
         </button>
       </div>
-      {message && <p className="text-green-600 dark:text-green-400 text-sm mt-2">{message}</p>}
-      {error && <p className="text-red-500 dark:text-red-400 text-sm mt-2">{error}</p>}
+      {message && (
+        <p className="text-green-600 dark:text-green-400 text-sm mt-2">
+          {message}
+        </p>
+      )}
+      {error && (
+        <p className="text-red-500 dark:text-red-400 text-sm mt-2">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

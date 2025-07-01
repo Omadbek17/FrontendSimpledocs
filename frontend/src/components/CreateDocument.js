@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../utils/api"; // 👈 your central API handler
 
 const CreateDocument = () => {
   const [title, setTitle] = useState("");
@@ -12,37 +13,29 @@ const CreateDocument = () => {
       setError("Title cannot be empty.");
       return;
     }
-  
+
+    const token = localStorage.getItem("access");
+    if (!token) {
+      setError("You must be logged in to create a document.");
+      return;
+    }
+
     setError("");
     setLoading(true);
-  
-    // 🔍 Debug: Check if token exists before making the request
-    console.log("Access token before creating doc:", localStorage.getItem("access"));
-  
+
     try {
-      const response = await fetch("http://localhost:8000/api/documents/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access")}`,
-        },
-        body: JSON.stringify({ title }),
-      });
-  
-      if (!response.ok) {
-        throw new Error("Failed to create document");
-      }
-  
-      const data = await response.json();
+      const response = await api.post("/documents/", { title }, token);
+
+      // navigate to editor on success
       sessionStorage.setItem("fromCreate", "true");
-      navigate(`/editor/${data.id}`);
+      navigate(`/editor/${response.id}`);
     } catch (err) {
-      setError("Something went wrong. Please try again.");
+      console.error("CreateDocument error:", err);
+      setError(err.message || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
   };
-  
 
   return (
     <div className="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">

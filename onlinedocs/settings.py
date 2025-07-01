@@ -71,14 +71,19 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'onlinedocs.wsgi.application'
-ASGI_APPLICATION = 'onlinedocs.asgi.application'
+
 
 # -------------------
 # DATABASE
 # -------------------
 DATABASES = {
-    'default': dj_database_url.config(conn_max_age=600)
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
 }
+
+
 
 
 # -------------------
@@ -138,11 +143,13 @@ CSRF_TRUSTED_ORIGINS = [
 # -------------------
 REDIS_URL = os.environ.get("REDIS_URL", "redis://127.0.0.1:6379")
 
+ASGI_APPLICATION = "onlinedocs.asgi.application"
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [REDIS_URL],
+            "hosts": [("127.0.0.1", 6379)],
         },
     },
 }

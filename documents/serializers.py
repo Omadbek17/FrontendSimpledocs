@@ -4,7 +4,6 @@ from .models import Document
 class DocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Document
-        # Only return what frontend really needs
         fields = ['id', 'title', 'content', 'created_at', 'updated_at', 'owner']
         read_only_fields = ['owner', 'created_at', 'updated_at']
 

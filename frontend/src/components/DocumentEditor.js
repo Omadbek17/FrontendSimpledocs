@@ -5,6 +5,7 @@ import {
   sendWebSocketMessage,
   closeWebSocket,
 } from "../utils/websocket";
+import api from "../utils/api";
 
 function DocumentEditor({ docId, onBack }) {
   const [document, setDocument] = useState(null);
@@ -25,27 +26,23 @@ function DocumentEditor({ docId, onBack }) {
 
     if (!docId) return;
 
-    setLoading(true);
-    fetch(`http://localhost:8000/api/documents/${docId}/`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("access")}`,
-      },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to load document");
-        return res.json();
-      })
-      .then((data) => {
+    const loadDocument = async () => {
+      setLoading(true);
+      const token = localStorage.getItem("access");
+      try {
+        const data = await api.get(`/documents/${docId}/`, token);
         setDocument(data);
         setContent(data.content || "");
-        setLoading(false);
         connectWebSocket(docId, handleWebSocketMessage);
-      })
-      .catch(() => {
-        setError("Error loading document.");
+      } catch (err) {
+        console.error("Error loading document:", err);
+        setError("Failed to load document. Please try again.");
+      } finally {
         setLoading(false);
-      });
+      }
+    };
 
+    loadDocument();
     return () => {
       closeWebSocket();
     };
@@ -62,25 +59,19 @@ function DocumentEditor({ docId, onBack }) {
   }, [lastSavedTime]);
 
   const handleWebSocketMessage = (data) => {
-    // Only update content if it's different from current
     if (data.content !== content) {
       setContent(data.content);
     }
   };
 
   const saveContent = async (latestContent) => {
+    const token = localStorage.getItem("access");
     try {
-      await fetch(`http://localhost:8000/api/documents/${docId}/`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access")}`,
-        },
-        body: JSON.stringify({ content: latestContent }),
-      });
+      await api.patch(`/documents/${docId}/`, { content: latestContent }, token);
       setLastSavedTime(Date.now());
-    } catch (error) {
-      setError("Error saving content.");
+    } catch (err) {
+      console.error("Error saving content:", err);
+      setError("Error saving content. Please try again.");
     }
   };
 
@@ -88,7 +79,6 @@ function DocumentEditor({ docId, onBack }) {
     const updatedContent = e.target.value;
     setContent(updatedContent);
 
-    // Debounce WebSocket send
     clearTimeout(typingTimeout.current);
     typingTimeout.current = setTimeout(() => {
       sendWebSocketMessage(updatedContent);

@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { DarkModeContext } from "../context/DarkModeContext";
+import api from "../utils/api";
 
 const Login = ({ onLogin }) => {
   const { isDarkMode } = useContext(DarkModeContext);
@@ -9,37 +10,33 @@ const Login = ({ onLogin }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const [isFocused, setIsFocused] = useState({ username: false, password: false });
+  const [loading, setLoading] = useState(false);
+  const [isFocused, setIsFocused] = useState({
+    username: false,
+    password: false,
+  });
 
   useEffect(() => {
     const accessToken = localStorage.getItem("access");
-    if (accessToken) {
-      navigate("/documents");
-    }
-  }, []);
+    if (accessToken) navigate("/documents");
+  }, [navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setMessage("");
+    setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8000/api/token/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Invalid username or password");
-      }
-
-      const data = await response.json();
+      const data = await api.post("/token/", { username, password });
       localStorage.setItem("access", data.access);
       localStorage.setItem("refresh", data.refresh);
-      onLogin(); // ✅ Notify App
+      onLogin(); // notify parent
       navigate("/documents");
-    } catch (error) {
-      setMessage(error.message);
+    } catch (err) {
+      console.error("Login error:", err);
+      setMessage(err.message || "Invalid username or password");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -102,7 +99,9 @@ const Login = ({ onLogin }) => {
 
   return (
     <div style={styles.form}>
-      <h2 style={{ textAlign: "center", marginBottom: 25 }}>Login</h2>
+      <h2 style={{ textAlign: "center", marginBottom: 25 }}>
+        Login
+      </h2>
       <form onSubmit={handleLogin}>
         <input
           type="text"
@@ -113,8 +112,12 @@ const Login = ({ onLogin }) => {
             ...(isFocused.username ? styles.focus : {}),
           }}
           onChange={(e) => setUsername(e.target.value)}
-          onFocus={() => setIsFocused({ ...isFocused, username: true })}
-          onBlur={() => setIsFocused({ ...isFocused, username: false })}
+          onFocus={() =>
+            setIsFocused({ ...isFocused, username: true })
+          }
+          onBlur={() =>
+            setIsFocused({ ...isFocused, username: false })
+          }
           required
           autoComplete="username"
         />
@@ -127,8 +130,12 @@ const Login = ({ onLogin }) => {
             ...(isFocused.password ? styles.focus : {}),
           }}
           onChange={(e) => setPassword(e.target.value)}
-          onFocus={() => setIsFocused({ ...isFocused, password: true })}
-          onBlur={() => setIsFocused({ ...isFocused, password: false })}
+          onFocus={() =>
+            setIsFocused({ ...isFocused, password: true })
+          }
+          onBlur={() =>
+            setIsFocused({ ...isFocused, password: false })
+          }
           required
           autoComplete="current-password"
         />
@@ -136,11 +143,13 @@ const Login = ({ onLogin }) => {
           type="submit"
           style={{
             ...styles.button,
-            ...(username && password ? {} : styles.disabledButton),
+            ...(username && password && !loading
+              ? {}
+              : styles.disabledButton),
           }}
-          disabled={!username || !password}
+          disabled={!username || !password || loading}
         >
-          Login
+          {loading ? "Logging in..." : "Login"}
         </button>
       </form>
       {message && <p style={styles.message}>{message}</p>}

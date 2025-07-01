@@ -14,7 +14,7 @@ urlpatterns = [
     path('register/', register, name='register'),
 
     # API endpoints
-    path('', DocumentListCreateView.as_view(), name='document-list-create'),
+    path('', DocumentListCreateView.as_view(), name='document-list'),
     path('<int:pk>/', DocumentRetrieveUpdateDestroyView.as_view(), name='document-detail'),
     path('my-documents/', MyDocumentsView.as_view(), name='my-documents'),
     path('shared-documents/', SharedDocumentsView.as_view(), name='shared-documents'),

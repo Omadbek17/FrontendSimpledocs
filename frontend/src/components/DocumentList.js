@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DocumentSharing from "./DocumentSharing";
-import { fetchWithAuth } from "../utils/auth";
+import api from "../utils/api";
 
 const DocumentList = ({ onSelectDocument }) => {
   const [myDocuments, setMyDocuments] = useState([]);
@@ -14,19 +14,31 @@ const DocumentList = ({ onSelectDocument }) => {
 
   const fetchDocuments = async () => {
     setLoading(true);
+    const token = localStorage.getItem("access");
     try {
-      const myRes = await fetchWithAuth("http://localhost:8000/api/documents/");
-      if (!myRes.ok) throw new Error("Failed to fetch your documents");
-      const myData = await myRes.json();
-      setMyDocuments(myData);
+      const myData = await api.get("/documents/", token);
+      console.log("Fetched my documents:", myData);
 
-      const sharedRes = await fetchWithAuth("http://localhost:8000/api/documents/shared-documents/");
-      if (!sharedRes.ok) throw new Error("Failed to fetch shared documents");
-      const sharedData = await sharedRes.json();
-      setSharedDocuments(sharedData);
+      if (Array.isArray(myData)) {
+        setMyDocuments(myData);
+      } else {
+        console.warn("Expected myData to be array, got:", myData);
+        setMyDocuments([]);
+      }
+
+      const sharedData = await api.get("/documents/shared-documents/", token);
+      console.log("Fetched shared documents:", sharedData);
+
+      if (Array.isArray(sharedData)) {
+        setSharedDocuments(sharedData);
+      } else {
+        console.warn("Expected sharedData to be array, got:", sharedData);
+        setSharedDocuments([]);
+      }
 
       setError("");
     } catch (err) {
+      console.error("Fetch documents error:", err);
       setError(err.message || "Failed to load documents.");
     } finally {
       setLoading(false);
@@ -43,16 +55,13 @@ const DocumentList = ({ onSelectDocument }) => {
   };
 
   const handleDelete = async () => {
+    const token = localStorage.getItem("access");
     try {
-      const res = await fetchWithAuth(`http://localhost:8000/api/documents/${docToDelete.id}/`, {
-        method: "DELETE",
-      });
-
-      if (!res.ok) throw new Error("Failed to delete");
-
+      await api.delete(`/documents/${docToDelete.id}/`, token);
       setMyDocuments((prev) => prev.filter((d) => d.id !== docToDelete.id));
       setSuccessMsg("Document deleted successfully!");
     } catch (err) {
+      console.error("Delete document error:", err);
       setError("Failed to delete document.");
     } finally {
       setDocToDelete(null);
@@ -70,15 +79,12 @@ const DocumentList = ({ onSelectDocument }) => {
     if (typeof onSelectDocument === "function") {
       onSelectDocument(id);
     } else {
-      // fallback: go to /editor/:id directly
       window.location.href = `/editor/${id}`;
     }
   };
 
   const renderDocumentList = (docs) =>
-    docs.length === 0 ? (
-      <p className="text-gray-600 dark:text-gray-300">No documents found.</p>
-    ) : (
+    Array.isArray(docs) && docs.length > 0 ? (
       <ul className="space-y-4">
         {docs.map((doc) => (
           <li
@@ -114,12 +120,16 @@ const DocumentList = ({ onSelectDocument }) => {
           </li>
         ))}
       </ul>
+    ) : (
+      <p className="text-gray-600 dark:text-gray-300">No documents found.</p>
     );
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8 transition-all">
       <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Documents</h2>
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
+          Documents
+        </h2>
 
         <div className="mb-4 flex space-x-4">
           <button
@@ -144,12 +154,21 @@ const DocumentList = ({ onSelectDocument }) => {
           </button>
         </div>
 
-        {error && <p className="text-red-500 dark:text-red-400 font-semibold mb-4">{error}</p>}
-        {successMsg && (
-          <p className="text-green-600 dark:text-green-400 font-semibold mb-4">{successMsg}</p>
+        {error && (
+          <p className="text-red-500 dark:text-red-400 font-semibold mb-4">
+            {error}
+          </p>
         )}
+        {successMsg && (
+          <p className="text-green-600 dark:text-green-400 font-semibold mb-4">
+            {successMsg}
+          </p>
+        )}
+
         {loading ? (
-          <p className="text-gray-500 dark:text-gray-400">Loading documents...</p>
+          <p className="text-gray-500 dark:text-gray-400">
+            Loading documents...
+          </p>
         ) : activeTab === "my" ? (
           renderDocumentList(myDocuments)
         ) : (
