@@ -1,4 +1,6 @@
-const API_URL = "http://localhost:8000/api";
+// src/utils/api.js
+
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000/api";
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem("access");
@@ -15,7 +17,6 @@ const handleResponse = async (response) => {
   }
 
   if (!response.ok) {
-    // Try to extract a meaningful error message
     const message = data?.detail || data?.message || response.statusText;
     throw new Error(message || "An unknown error occurred");
   }
@@ -28,9 +29,7 @@ const api = {
     const response = await fetch(
       `${API_URL}${path.startsWith("/") ? path : "/" + path}`,
       {
-        headers: {
-          ...getAuthHeaders(),
-        },
+        headers: { ...getAuthHeaders() },
       }
     );
     return handleResponse(response);
@@ -71,9 +70,7 @@ const api = {
       `${API_URL}${path.startsWith("/") ? path : "/" + path}`,
       {
         method: "DELETE",
-        headers: {
-          ...getAuthHeaders(),
-        },
+        headers: { ...getAuthHeaders() },
       }
     );
     return handleResponse(response);
