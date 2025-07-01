@@ -12,11 +12,10 @@ DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
     "simpledocsnew.onrender.com",
-    "onlinedocs.onrender.com",  # keep your old one if still needed
+    "onlinedocs.onrender.com",
     "localhost",
     "127.0.0.1",
 ]
-
 
 # -------------------
 # APPLICATIONS
@@ -71,7 +70,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'onlinedocs.wsgi.application'
-
+ASGI_APPLICATION = 'onlinedocs.asgi.application'
 
 # -------------------
 # DATABASE
@@ -82,9 +81,6 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
-
-
 
 # -------------------
 # PASSWORD VALIDATION
@@ -126,16 +122,17 @@ REST_FRAMEWORK = {
 }
 
 # -------------------
-# CORS & CSRF
+# CORS & CSRF - UPDATED for your Vercel + Render
 # -------------------
 CORS_ALLOWED_ORIGINS = [
-    "https://onlinedocs.vercel.app",
+    "https://frontend-simpledocs-98hy.vercel.app",  # your current frontend
     "http://localhost:3000",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://onlinedocs.vercel.app",
+    "https://frontend-simpledocs-98hy.vercel.app",
+    "https://simpledocsnew.onrender.com",           # your backend
 ]
 
 # -------------------
@@ -143,13 +140,11 @@ CSRF_TRUSTED_ORIGINS = [
 # -------------------
 REDIS_URL = os.environ.get("REDIS_URL", "redis://127.0.0.1:6379")
 
-ASGI_APPLICATION = "onlinedocs.asgi.application"
-
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [REDIS_URL],
         },
     },
 }
