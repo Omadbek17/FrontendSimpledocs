@@ -1,6 +1,4 @@
-// src/utils/api.js
-
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000/api";
+const API_URL = "https://simpledocsnew.onrender.com/api";
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem("access");
@@ -26,53 +24,41 @@ const handleResponse = async (response) => {
 
 const api = {
   get: async (path) => {
-    const response = await fetch(
-      `${API_URL}${path.startsWith("/") ? path : "/" + path}`,
-      {
-        headers: { ...getAuthHeaders() },
-      }
-    );
+    const response = await fetch(`${API_URL}${path.startsWith("/") ? path : "/" + path}`, {
+      headers: { ...getAuthHeaders() },
+    });
     return handleResponse(response);
   },
 
   post: async (path, data) => {
-    const response = await fetch(
-      `${API_URL}${path.startsWith("/") ? path : "/" + path}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...getAuthHeaders(),
-        },
-        body: JSON.stringify(data),
-      }
-    );
+    const response = await fetch(`${API_URL}${path.startsWith("/") ? path : "/" + path}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeaders(),
+      },
+      body: JSON.stringify(data),
+    });
     return handleResponse(response);
   },
 
   patch: async (path, data) => {
-    const response = await fetch(
-      `${API_URL}${path.startsWith("/") ? path : "/" + path}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          ...getAuthHeaders(),
-        },
-        body: JSON.stringify(data),
-      }
-    );
+    const response = await fetch(`${API_URL}${path.startsWith("/") ? path : "/" + path}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeaders(),
+      },
+      body: JSON.stringify(data),
+    });
     return handleResponse(response);
   },
 
   delete: async (path) => {
-    const response = await fetch(
-      `${API_URL}${path.startsWith("/") ? path : "/" + path}`,
-      {
-        method: "DELETE",
-        headers: { ...getAuthHeaders() },
-      }
-    );
+    const response = await fetch(`${API_URL}${path.startsWith("/") ? path : "/" + path}`, {
+      method: "DELETE",
+      headers: { ...getAuthHeaders() },
+    });
     return handleResponse(response);
   },
 };
