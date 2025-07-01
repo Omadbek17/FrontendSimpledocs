@@ -124,15 +124,16 @@ REST_FRAMEWORK = {
 # -------------------
 # CORS & CSRF - UPDATED for your Vercel + Render
 # -------------------
-CORS_ALLOWED_ORIGINS = [
-    "https://frontend-simpledocs-98hy.vercel.app",  # your current frontend
-    "http://localhost:3000",
-]
 CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "https://frontend-simpledocs-98hy.vercel.app",
+    "https://frontend-simpledocs-98hy-git-main-omadbeks-projects-2a64764c.vercel.app",
+]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://frontend-simpledocs-98hy.vercel.app",
-    "https://simpledocsnew.onrender.com",           # your backend
+    "https://frontend-simpledocs-98hy-git-main-omadbeks-projects-2a64764c.vercel.app",
 ]
 
 # -------------------
