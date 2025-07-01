@@ -1,6 +1,5 @@
 from pathlib import Path
 import os
-import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret-key")
@@ -33,7 +32,7 @@ INSTALLED_APPS = [
 
 # -------------------
 # MIDDLEWARE
-# (CorsMiddleware MUST be at the top!)
+# CORS must be first!
 # -------------------
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -66,6 +65,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'onlinedocs.wsgi.application'
 ASGI_APPLICATION = 'onlinedocs.asgi.application'
 
+# -------------------
+# DATABASE
+# -------------------
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -73,6 +75,9 @@ DATABASES = {
     }
 }
 
+# -------------------
+# AUTH & PASSWORDS
+# -------------------
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -80,11 +85,17 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+# -------------------
+# INTERNATIONALIZATION
+# -------------------
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
+# -------------------
+# STATIC FILES
+# -------------------
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
@@ -92,7 +103,7 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # -------------------
-# REST + JWT
+# REST & JWT
 # -------------------
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -104,12 +115,13 @@ REST_FRAMEWORK = {
 }
 
 # -------------------
-# CORS CONFIG (safe broad for dev)
+# CORS - final bulletproof version
 # -------------------
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = True  # or use CORS_ALLOWED_ORIGINS with explicit list
+CORS_ALLOW_ALL_ORIGINS = True  # 🚀 for guaranteed deployment success
 
-# If you prefer explicit origins for security, replace above line with:
+# If you later want tighter security, replace with:
+# CORS_ALLOW_ALL_ORIGINS = False
 # CORS_ALLOWED_ORIGINS = [
 #     "https://frontend-simpledocs-98hy.vercel.app",
 #     "https://frontend-simpledocs-98hy-git-main-omadbeks-projects-2a64764c.vercel.app",
