@@ -1,16 +1,13 @@
 from pathlib import Path
 import os
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret-key")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = [
-    "simpledocsnew.onrender.com",
-    "onlinedocs.onrender.com",
-    "localhost",
-    "127.0.0.1",
-]
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost 127.0.0.1").split()
+CSRF_TRUSTED_ORIGINS = os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "").split()
 
 # -------------------
 # APPLICATIONS
@@ -32,7 +29,6 @@ INSTALLED_APPS = [
 
 # -------------------
 # MIDDLEWARE
-# CORS must be first!
 # -------------------
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -69,10 +65,7 @@ ASGI_APPLICATION = 'onlinedocs.asgi.application'
 # DATABASE
 # -------------------
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": dj_database_url.config(default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
 }
 
 # -------------------
@@ -115,28 +108,15 @@ REST_FRAMEWORK = {
 }
 
 # -------------------
-# CORS - final bulletproof version
+# CORS
 # -------------------
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = True  # 🚀 for guaranteed deployment success
-
-# If you later want tighter security, replace with:
-# CORS_ALLOW_ALL_ORIGINS = False
-# CORS_ALLOWED_ORIGINS = [
-#     "https://frontend-simpledocs-98hy.vercel.app",
-#     "https://frontend-simpledocs-98hy-git-main-omadbeks-projects-2a64764c.vercel.app",
-# ]
-
-CSRF_TRUSTED_ORIGINS = [
-    "https://frontend-simpledocs-98hy.vercel.app",
-    "https://frontend-simpledocs-98hy-git-main-omadbeks-projects-2a64764c.vercel.app",
-]
+CORS_ALLOW_ALL_ORIGINS = True  # yoki xavfsizlik uchun False qilib CORS_ALLOWED_ORIGINS da belgilaysan
 
 # -------------------
 # CHANNELS & CELERY
 # -------------------
 REDIS_URL = os.environ.get("REDIS_URL", "redis://127.0.0.1:6379")
-
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
