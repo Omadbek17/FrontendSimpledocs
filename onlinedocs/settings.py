@@ -41,31 +41,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    "https://e0a4-94-158-60-111.ngrok-free.app",
-]
-
-ROOT_URLCONF = 'onlinedocs.urls'
-
-
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
-
-WSGI_APPLICATION = 'onlinedocs.wsgi.application'
-ASGI_APPLICATION = 'onlinedocs.asgi.application'
-
 # -------------------
 # DATABASE
 # -------------------
@@ -113,10 +88,25 @@ REST_FRAMEWORK = {
 }
 
 # -------------------
-# CORS
+# CORS SETTINGS
 # -------------------
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = False  # yoki xavfsizlik uchun False qilib CORS_ALLOWED_ORIGINS da belgilaysan
+CORS_ALLOW_ALL_ORIGINS = False  # xavfsizlik uchun hamma joyga ruxsat bermaymiz
+
+CORS_ALLOWED_ORIGINS = [
+    "https://e0a4-94-158-60-111.ngrok-free.app",
+]
+
+# Agar ngrok subdomen o‘zgarib tursa, pattern bilan ham qo‘shib qo‘yishingiz mumkin
+import re
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https:\/\/[a-z0-9\-]+\.ngrok\-free\.app$",
+]
+
+# CSRF uchun trusted origins ham qo‘sh
+CSRF_TRUSTED_ORIGINS += [
+    "https://e0a4-94-158-60-111.ngrok-free.app",
+]
 
 # -------------------
 # CHANNELS & CELERY
