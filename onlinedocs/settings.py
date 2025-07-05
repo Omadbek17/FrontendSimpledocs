@@ -1,17 +1,14 @@
 from pathlib import Path
 import os
 import dj_database_url
+import re
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret-key")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost 127.0.0.1").split()
-CSRF_TRUSTED_ORIGINS = os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "").split()
+ALLOWED_HOSTS = ["simpledocsnew.onrender.com", "localhost", "127.0.0.1"]
 
-# -------------------
-# APPLICATIONS
-# -------------------
 INSTALLED_APPS = [
     'corsheaders',
     'channels',
@@ -27,9 +24,6 @@ INSTALLED_APPS = [
     'documents',
 ]
 
-# -------------------
-# MIDDLEWARE
-# -------------------
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -41,43 +35,21 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# -------------------
-# DATABASE
-# -------------------
 DATABASES = {
     "default": dj_database_url.config(default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
 }
 
-# -------------------
-# AUTH & PASSWORDS
-# -------------------
-AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
-]
-
-# -------------------
-# INTERNATIONALIZATION
-# -------------------
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# -------------------
-# STATIC FILES
-# -------------------
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# -------------------
-# REST & JWT
-# -------------------
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -91,21 +63,22 @@ REST_FRAMEWORK = {
 # CORS SETTINGS
 # -------------------
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = False  # xavfsizlik uchun hamma joyga ruxsat bermaymiz
+CORS_ALLOW_ALL_ORIGINS = False
 
 CORS_ALLOWED_ORIGINS = [
+    "https://frontend-simpledocs-98hy.vercel.app",
     "https://e0a4-94-158-60-111.ngrok-free.app",
 ]
 
-# Agar ngrok subdomen o‘zgarib tursa, pattern bilan ham qo‘shib qo‘yishingiz mumkin
-import re
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https:\/\/[a-z0-9\-]+\.ngrok\-free\.app$",
+    r"^https:\/\/.*\.vercel\.app$",
 ]
 
-# CSRF uchun trusted origins ham qo‘sh
-CSRF_TRUSTED_ORIGINS += [
+CSRF_TRUSTED_ORIGINS = [
+    "https://frontend-simpledocs-98hy.vercel.app",
     "https://e0a4-94-158-60-111.ngrok-free.app",
+    "https://simpledocsnew.onrender.com",
 ]
 
 # -------------------
