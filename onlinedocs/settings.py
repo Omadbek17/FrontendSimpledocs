@@ -7,7 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret-key")
 DEBUG = True
 
-ALLOWED_HOSTS = ["simpledocsnew.onrender.com", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     "corsheaders",
@@ -24,7 +24,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",  # !!! birinchi bo'lishi shart
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -56,12 +56,10 @@ REST_FRAMEWORK = {
 }
 
 # -------------------
-# CORS
+# CORS - HAMMA ORIGINLARGA RUXSAT
 # -------------------
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
-    "https://frontend-simpledocs-98hy.vercel.app",
-]
 CORS_ALLOW_HEADERS = ["*"]
 CORS_ALLOW_METHODS = ["*"]
 
@@ -80,6 +78,5 @@ CHANNEL_LAYERS = {
         "CONFIG": {"hosts": [REDIS_URL]},
     },
 }
-
 CELERY_BROKER_URL = REDIS_URL
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
