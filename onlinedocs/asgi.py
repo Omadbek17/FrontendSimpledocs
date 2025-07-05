@@ -10,23 +10,21 @@ from starlette.applications import Starlette
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'onlinedocs.settings')
 
+# Django HTTP app
 django_asgi_app = get_asgi_application()
 
-# Starlette app orqali CorsMiddleware qo‘shamiz
-app = Starlette()
-app.add_middleware(
+# Starlette app bilan CORS qo‘shamiz
+starlette_app = Starlette()
+starlette_app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # test uchun hammasiga ruxsat, xohlasang origin qo‘y
+    allow_origins=["*"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    allow_credentials=True,
 )
 
-# Django ASGI ilovasini Starlette ichiga joylash
-app.mount("/", django_asgi_app)
-
 application = ProtocolTypeRouter({
-    "http": app,
+    "http": django_asgi_app,
     "websocket": AuthMiddlewareStack(
         URLRouter(
             documents.routing.websocket_urlpatterns
