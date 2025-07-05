@@ -9,12 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # -------------------
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret-key")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
-
-ALLOWED_HOSTS = [
-    "simpledocsnew.onrender.com",
-    "localhost",
-    "127.0.0.1",
-]
+ALLOWED_HOSTS = ["simpledocsnew.onrender.com", "localhost", "127.0.0.1"]
 
 # -------------------
 # APPLICATIONS
@@ -38,7 +33,7 @@ INSTALLED_APPS = [
 # MIDDLEWARE
 # -------------------
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",  # CORS DOIMO BIRINCHI
     "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -85,56 +80,24 @@ REST_FRAMEWORK = {
 }
 
 # -------------------
-# CORS & CSRF SETTINGS
+# CORS SETTINGS
 # -------------------
+CORS_ALLOW_ALL_ORIGINS = True  # 🚀 TESTDA HAMMA ORIGINLARGA RUXSAT BER
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = False
-
-CORS_ALLOWED_ORIGINS = [
-    "https://frontend-simpledocs-98hy.vercel.app",
-]
-
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https:\/\/.*\.vercel\.app$",
-]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://frontend-simpledocs-98hy.vercel.app",
     "https://simpledocsnew.onrender.com",
 ]
 
-CORS_ALLOW_HEADERS = [
-    "accept",
-    "accept-encoding",
-    "authorization",
-    "content-type",
-    "dnt",
-    "origin",
-    "user-agent",
-    "x-csrftoken",
-    "x-requested-with",
-]
-
-CORS_ALLOW_METHODS = [
-    "DELETE",
-    "GET",
-    "OPTIONS",
-    "PATCH",
-    "POST",
-    "PUT",
-]
-
 # -------------------
 # CHANNELS & REDIS
 # -------------------
 REDIS_URL = os.environ.get("REDIS_URL", "redis://127.0.0.1:6379")
-
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [REDIS_URL],
-        },
+        "CONFIG": {"hosts": [REDIS_URL]},
     },
 }
 
