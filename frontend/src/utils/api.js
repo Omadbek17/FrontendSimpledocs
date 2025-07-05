@@ -22,42 +22,55 @@ const handleResponse = async (response) => {
   return data;
 };
 
+const buildUrl = (path) => {
+  return `${API_URL}${path.startsWith("/") ? path : "/" + path}`;
+};
+
 const api = {
   get: async (path) => {
-    const response = await fetch(`${API_URL}${path.startsWith("/") ? path : "/" + path}`, {
-      headers: { ...getAuthHeaders() },
+    const response = await fetch(buildUrl(path), {
+      method: "GET",
+      headers: {
+        ...getAuthHeaders(),
+      },
+      credentials: "include", // important for cookies
     });
     return handleResponse(response);
   },
 
   post: async (path, data) => {
-    const response = await fetch(`${API_URL}${path.startsWith("/") ? path : "/" + path}`, {
+    const response = await fetch(buildUrl(path), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         ...getAuthHeaders(),
       },
       body: JSON.stringify(data),
+      credentials: "include",
     });
     return handleResponse(response);
   },
 
   patch: async (path, data) => {
-    const response = await fetch(`${API_URL}${path.startsWith("/") ? path : "/" + path}`, {
+    const response = await fetch(buildUrl(path), {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         ...getAuthHeaders(),
       },
       body: JSON.stringify(data),
+      credentials: "include",
     });
     return handleResponse(response);
   },
 
   delete: async (path) => {
-    const response = await fetch(`${API_URL}${path.startsWith("/") ? path : "/" + path}`, {
+    const response = await fetch(buildUrl(path), {
       method: "DELETE",
-      headers: { ...getAuthHeaders() },
+      headers: {
+        ...getAuthHeaders(),
+      },
+      credentials: "include",
     });
     return handleResponse(response);
   },

@@ -28,13 +28,14 @@ const Login = ({ onLogin }) => {
 
     try {
       const data = await api.post("/token/", { username, password });
+      console.log("Login success:", data);
       localStorage.setItem("access", data.access);
       localStorage.setItem("refresh", data.refresh);
-      onLogin(); // notify parent
+      if (onLogin) onLogin();
       navigate("/documents");
     } catch (err) {
       console.error("Login error:", err);
-      setMessage(err.message || "Invalid username or password");
+      setMessage(err.message || "Login failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -99,9 +100,7 @@ const Login = ({ onLogin }) => {
 
   return (
     <div style={styles.form}>
-      <h2 style={{ textAlign: "center", marginBottom: 25 }}>
-        Login
-      </h2>
+      <h2 style={{ textAlign: "center", marginBottom: 25 }}>Login</h2>
       <form onSubmit={handleLogin}>
         <input
           type="text"
@@ -112,12 +111,8 @@ const Login = ({ onLogin }) => {
             ...(isFocused.username ? styles.focus : {}),
           }}
           onChange={(e) => setUsername(e.target.value)}
-          onFocus={() =>
-            setIsFocused({ ...isFocused, username: true })
-          }
-          onBlur={() =>
-            setIsFocused({ ...isFocused, username: false })
-          }
+          onFocus={() => setIsFocused({ ...isFocused, username: true })}
+          onBlur={() => setIsFocused({ ...isFocused, username: false })}
           required
           autoComplete="username"
         />
@@ -130,12 +125,8 @@ const Login = ({ onLogin }) => {
             ...(isFocused.password ? styles.focus : {}),
           }}
           onChange={(e) => setPassword(e.target.value)}
-          onFocus={() =>
-            setIsFocused({ ...isFocused, password: true })
-          }
-          onBlur={() =>
-            setIsFocused({ ...isFocused, password: false })
-          }
+          onFocus={() => setIsFocused({ ...isFocused, password: true })}
+          onBlur={() => setIsFocused({ ...isFocused, password: false })}
           required
           autoComplete="current-password"
         />
@@ -143,9 +134,7 @@ const Login = ({ onLogin }) => {
           type="submit"
           style={{
             ...styles.button,
-            ...(username && password && !loading
-              ? {}
-              : styles.disabledButton),
+            ...(username && password && !loading ? {} : styles.disabledButton),
           }}
           disabled={!username || !password || loading}
         >
