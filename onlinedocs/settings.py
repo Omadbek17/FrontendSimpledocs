@@ -41,7 +41,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CORS_ALLOWED_ORIGINS = [
+    "https://e0a4-94-158-60-111.ngrok-free.app",
+]
+
 ROOT_URLCONF = 'onlinedocs.urls'
+
 
 TEMPLATES = [
     {
@@ -111,7 +116,7 @@ REST_FRAMEWORK = {
 # CORS
 # -------------------
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = True  # yoki xavfsizlik uchun False qilib CORS_ALLOWED_ORIGINS da belgilaysan
+CORS_ALLOW_ALL_ORIGINS = False  # yoki xavfsizlik uchun False qilib CORS_ALLOWED_ORIGINS da belgilaysan
 
 # -------------------
 # CHANNELS & CELERY
