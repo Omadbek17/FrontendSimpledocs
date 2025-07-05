@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # -------------------------
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret-key")
 DEBUG = os.environ.get("DEBUG", "True") == "True"
-ALLOWED_HOSTS = ["*"]  # Barcha hostlarga ochiq
+ALLOWED_HOSTS = ["*"]  # barcha hostlarga ruxsat
 
 # -------------------------
 # APPLICATIONS
@@ -32,7 +32,7 @@ INSTALLED_APPS = [
 # MIDDLEWARE
 # -------------------------
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",  # CORS HAR DOIM ENG YUQORIDA
+    "corsheaders.middleware.CorsMiddleware",  # HAR DOIM ENG YUQORIDA!
     "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -78,9 +78,9 @@ REST_FRAMEWORK = {
 }
 
 # -------------------------
-# CORS CONFIGURATION
+# CORS SETTINGS
 # -------------------------
-CORS_ALLOW_ALL_ORIGINS = True       # HAR QANDAY FRONTENDGA RUXSAT
+CORS_ALLOW_ALL_ORIGINS = True       # barcha frontendlarga ruxsat
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = ["*"]
 CORS_ALLOW_METHODS = ["*"]
