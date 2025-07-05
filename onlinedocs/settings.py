@@ -85,24 +85,43 @@ REST_FRAMEWORK = {
 }
 
 # -------------------
-# CORS SETTINGS
+# CORS & CSRF SETTINGS
 # -------------------
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = False
 
 CORS_ALLOWED_ORIGINS = [
     "https://frontend-simpledocs-98hy.vercel.app",
-    "https://simpledocsnew.onrender.com",
 ]
 
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https:\/\/.*\.vercel\.app$",
-    r"^https:\/\/[a-z0-9\-]+\.ngrok\-free\.app$",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://frontend-simpledocs-98hy.vercel.app",
     "https://simpledocsnew.onrender.com",
+]
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
 ]
 
 # -------------------
