@@ -3,20 +3,16 @@ from pathlib import Path
 import dj_database_url
 from dotenv import load_dotenv
 
-load_dotenv()  # Optional: useful for local dev
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# -------------------------
-# SECURITY
-# -------------------------
+# ------------------------- SECURITY -------------------------
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "your-dev-secret")
 DEBUG = os.getenv("DEBUG", "False") == "True"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 
-# -------------------------
-# INSTALLED APPS
-# -------------------------
+# ------------------------- INSTALLED APPS -------------------------
 INSTALLED_APPS = [
     "corsheaders",
     "django.contrib.admin",
@@ -32,39 +28,29 @@ INSTALLED_APPS = [
     "documents",
 ]
 
-# -------------------------
-# MIDDLEWARE
-# -------------------------
+# ------------------------- MIDDLEWARE -------------------------
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
-    "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-# -------------------------
-# URL & ASGI / WSGI
-# -------------------------
+# ------------------------- URL & ASGI / WSGI -------------------------
 ROOT_URLCONF = "onlinedocs.urls"
 WSGI_APPLICATION = "onlinedocs.wsgi.application"
 ASGI_APPLICATION = "onlinedocs.asgi.application"
 
-# -------------------------
-# DATABASE
-# -------------------------
+# ------------------------- DATABASE -------------------------
 DATABASES = {
-    "default": dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
-    )
+    "default": dj_database_url.config(conn_max_age=600)
 }
 
-# -------------------------
-# CHANNELS + REDIS
-# -------------------------
+# ------------------------- CHANNELS + REDIS -------------------------
 REDIS_URL = os.getenv("REDIS_URL", "redis://127.0.0.1:6379")
 CHANNEL_LAYERS = {
     "default": {
@@ -73,16 +59,11 @@ CHANNEL_LAYERS = {
     },
 }
 
-# -------------------------
-# CELERY
-# -------------------------
+# ------------------------- CELERY -------------------------
 CELERY_BROKER_URL = REDIS_URL
-CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/1")
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", REDIS_URL)
 
-
-# -------------------------
-# REST FRAMEWORK
-# -------------------------
+# ------------------------- REST FRAMEWORK -------------------------
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -92,9 +73,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-# -------------------------
-# TEMPLATES
-# -------------------------
+# ------------------------- TEMPLATES -------------------------
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -111,35 +90,28 @@ TEMPLATES = [
     },
 ]
 
-# -------------------------
-# CORS & CSRF
-# -------------------------
+# ------------------------- CORS & CSRF -------------------------
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
     "https://frontend-simpledocs-98hy.vercel.app",
-    "https://simpledocsnew.onrender.com",
 ]
-CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
     "https://frontend-simpledocs-98hy.vercel.app",
-    "https://simpledocsnew.onrender.com",
 ]
+CORS_ALLOW_CREDENTIALS = True
 
-# -------------------------
-# STATIC FILES
-# -------------------------
+# ------------------------- STATIC FILES -------------------------
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-# -------------------------
-# TIME / LOCALE
-# -------------------------
+# ------------------------- TIME / LOCALE -------------------------
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-# -------------------------
-# MISC
-# -------------------------
+# ------------------------- MISC -------------------------
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# ------------------------- SSL/Proxy Support for Railway -------------------------
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
