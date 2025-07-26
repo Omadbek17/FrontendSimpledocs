@@ -1,18 +1,21 @@
-from pathlib import Path
 import os
+from pathlib import Path
 import dj_database_url
+from dotenv import load_dotenv
+
+load_dotenv()  # Optional: useful for local dev
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # -------------------------
-# BASIC SETTINGS
+# SECURITY
 # -------------------------
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret-key")
-DEBUG = os.environ.get("DEBUG", "True") == "True"
-ALLOWED_HOSTS = ["*"]  # barcha hostlarga ruxsat
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "your-dev-secret")
+DEBUG = os.getenv("DEBUG", "False") == "True"
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 
 # -------------------------
-# APPLICATIONS
+# INSTALLED APPS
 # -------------------------
 INSTALLED_APPS = [
     "corsheaders",
@@ -24,6 +27,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework_simplejwt",
+    "channels",
     "users",
     "documents",
 ]
@@ -32,7 +36,7 @@ INSTALLED_APPS = [
 # MIDDLEWARE
 # -------------------------
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",  # HAR DOIM ENG YUQORIDA!
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -41,6 +45,13 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+# -------------------------
+# URL & ASGI / WSGI
+# -------------------------
+ROOT_URLCONF = "onlinedocs.urls"
+WSGI_APPLICATION = "onlinedocs.wsgi.application"
+ASGI_APPLICATION = "onlinedocs.asgi.application"
 
 # -------------------------
 # DATABASE
@@ -52,18 +63,20 @@ DATABASES = {
 }
 
 # -------------------------
-# TIME & LANGUAGE
+# CHANNELS + REDIS
 # -------------------------
-LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
-USE_I18N = True
-USE_TZ = True
+REDIS_URL = os.getenv("REDIS_URL", "redis://127.0.0.1:6379")
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {"hosts": [REDIS_URL]},
+    },
+}
 
 # -------------------------
-# STATIC FILES
+# CELERY
 # -------------------------
-STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+CELERY_BROKER_URL = REDIS_URL
 
 # -------------------------
 # REST FRAMEWORK
@@ -78,38 +91,53 @@ REST_FRAMEWORK = {
 }
 
 # -------------------------
-# CORS SETTINGS
+# TEMPLATES
 # -------------------------
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_HEADERS = ["*"]
-CORS_ALLOW_METHODS = ["*"]
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+        },
+    },
+]
 
 # -------------------------
-# CSRF TRUSTED ORIGINS
+# CORS & CSRF
 # -------------------------
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOWED_ORIGINS = [
+    "https://frontend-simpledocs-98hy.vercel.app",
+    "https://simpledocsnew.onrender.com",
+]
+CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
     "https://frontend-simpledocs-98hy.vercel.app",
     "https://simpledocsnew.onrender.com",
 ]
 
 # -------------------------
-# CHANNELS & REDIS
+# STATIC FILES
 # -------------------------
-REDIS_URL = os.environ.get("REDIS_URL", "redis://127.0.0.1:6379")
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {"hosts": [REDIS_URL]},
-    },
-}
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # -------------------------
-# CELERY
+# TIME / LOCALE
 # -------------------------
-CELERY_BROKER_URL = REDIS_URL
+LANGUAGE_CODE = "en-us"
+TIME_ZONE = "UTC"
+USE_I18N = True
+USE_TZ = True
 
 # -------------------------
-# DEFAULT PRIMARY KEY
+# MISC
 # -------------------------
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
